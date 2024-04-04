@@ -5,6 +5,16 @@
 Debug
 dvt
 RemoteSystemsTempFiles
+targetConfigs
+Release
+.settings
+.launches
 .metadata
 .jxbrowser.userdata
+cc3200v1p32.cmd
+README.html
+.project
+.cproject
+.ccsproject
+
 
