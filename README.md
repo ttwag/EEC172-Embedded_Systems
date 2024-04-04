@@ -1,0 +1,1 @@
+[CC3200 Peripheral Driver Library User's Guide](https://software-dl.ti.com/ecs/cc31xx/APIs/public/cc32xx_peripherals/latest/html/index.html)
