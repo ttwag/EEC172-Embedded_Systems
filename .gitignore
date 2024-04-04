@@ -1,0 +1,10 @@
+# MacOS
+.DS_Store
+
+# CCS Studio
+Debug
+dvt
+RemoteSystemsTempFiles
+.metadata
+.jxbrowser.userdata
+
