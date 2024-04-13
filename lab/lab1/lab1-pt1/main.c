@@ -70,6 +70,7 @@
 
 // Common interface includes
 #include "gpio_if.h"
+#include "uart_if.h"
 
 #include "pinmux.h"
 
@@ -199,6 +200,7 @@ main()
     // Set up the GPIO lines to mode 0 (GPIO)
     //
     PinMuxConfig();
+
     GPIO_IF_LedConfigure(LED1|LED2|LED3);
 
     GPIO_IF_LedOff(MCU_ALL_LED_IND);
