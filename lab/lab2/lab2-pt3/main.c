@@ -35,42 +35,48 @@
 
 //*****************************************************************************
 //
-// Application Name     - SPI Demo
-// Application Overview - The demo application focuses on showing the required 
-//                        initialization sequence to enable the CC3200 SPI 
-//                        module in full duplex 4-wire master and slave mode(s).
+// Application Name     - I2C 
+// Application Overview - The objective of this application is act as an I2C 
+//                        diagnostic tool. The demo application is a generic 
+//                        implementation that allows the user to communicate 
+//                        with any I2C device over the lines. 
 //
 //*****************************************************************************
 
-
 //*****************************************************************************
 //
-//! \addtogroup SPI_Demo
+//! \addtogroup i2c_demo
 //! @{
 //
 //*****************************************************************************
 
 // Standard includes
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 
 // Driverlib includes
 #include "hw_types.h"
+#include "hw_ints.h"
 #include "hw_memmap.h"
 #include "hw_common_reg.h"
-#include "hw_ints.h"
-#include "spi.h"
+#include "hw_apps_rcm.h"
 #include "rom.h"
 #include "rom_map.h"
-#include "utils.h"
-#include "prcm.h"
-#include "gpio.h"
-#include "gpio_if.h"
-#include "uart.h"
 #include "interrupt.h"
+#include "prcm.h"
+#include "utils.h"
+
+#include "uart.h"
+#include "spi.h"
+#include "gpio.h"
 
 // Common interface includes
 #include "uart_if.h"
+#include "gpio_if.h"
+#include "i2c_if.h"
+
 #include "pin_mux_config.h"
 
 // OLED
@@ -80,112 +86,70 @@
 #include "./oled/glcdfont.h"
 
 
+//*****************************************************************************
+//                      MACRO DEFINITIONS
+//*****************************************************************************
 #define APPLICATION_VERSION     "1.4.0"
-
+#define APP_NAME                "I2C Demo"
+#define UART_PRINT              Report
+#define FOREVER                 1
+#define CONSOLE                 UARTA0_BASE
+#define FAILURE                 -1
+#define SUCCESS                 0
+#define RETERR_IF_TRUE(condition) {if(condition) return FAILURE;}
+#define RET_IF_ERR(Func)          {int iRetVal = (Func); \
+                                   if (SUCCESS != iRetVal) \
+                                     return  iRetVal;}
 #define SPI_IF_BIT_RATE  100000
+#define TR_BUFF_SIZE     100
+
+#define MASTER_MSG       "This is CC3200 SPI Master Application\n\r"
+#define SLAVE_MSG        "This is CC3200 SPI Slave Application\n\r"
+//*****************************************************************************
+//
+// Application Master/Slave mode selector macro
+//
+// MASTER_MODE = 1 : Application in master mode
+// MASTER_MODE = 0 : Application in slave mode
+//
+//*****************************************************************************
+#define MASTER_MODE      0
 
 
+
+
+
+//*****************************************************************************
+//                 GLOBAL VARIABLES -- Start
+//*****************************************************************************
 #if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-
-static void BoardInit(void);
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
 //*****************************************************************************
 
-//*****************************************************************************
-//
-//! Print the string, "Hello World!" onto the Adafruit OlED Display
-//
-//*****************************************************************************
 
-void print_hello_world(void) {
-    fillScreen(BLACK);
-    drawChar(0, HEIGHT/5, 'H', WHITE, WHITE, 5);
-    drawChar(30, HEIGHT/5, 'e', WHITE, WHITE, 5);
-    drawChar(55, HEIGHT/5, 'l', WHITE, WHITE, 5);
-    drawChar(75, HEIGHT/5, 'l', WHITE, WHITE, 5);
-    drawChar(100, HEIGHT/5, 'o', WHITE, WHITE, 5);
+//****************************************************************************
+//                      LOCAL FUNCTION DEFINITIONS                          
+//****************************************************************************
 
-    drawChar(0, HEIGHT*3/5, 'W', WHITE, WHITE, 5);
-    drawChar(30, HEIGHT*3/5, 'o', WHITE, WHITE, 5);
-    drawChar(58, HEIGHT*3/5, 'r', WHITE, WHITE, 5);
-    drawChar(75, HEIGHT*3/5, 'l', WHITE, WHITE, 5);
-    drawChar(95, HEIGHT*3/5, 'd', WHITE, WHITE, 5);
-    drawChar(113, HEIGHT*3/5, '!', WHITE, WHITE, 5);
-}
-
-//*****************************************************************************
-//
-//! Print the full character set from the  glcdfont.h onto the center of
-//! Adafruit OlED Display
-//
-//*****************************************************************************
-
-void print_font(void) {
-    fillScreen(BLACK);
-    unsigned char myFont = 0x00;
-    int i;
-    for (i = 0; i < 256; i++) {
-        drawChar(WIDTH/2, HEIGHT/2, myFont, WHITE, WHITE, 5);
-        MAP_UtilsDelay(8000000);
-        drawChar(WIDTH/2, HEIGHT/2, myFont, BLACK, BLACK, 5);
-        myFont += 0x01;
-    }
-}
-
-//*****************************************************************************
-//
-//! Print 8 horizontal lines onto the Adafruit OlED Display
-//
-//*****************************************************************************
-
-void printHzLine(void) {
-    fillScreen(BLACK);
-    drawLine(0, HEIGHT/9, WIDTH, HEIGHT/9, BLACK);
-    drawLine(0, HEIGHT*2/9, WIDTH, HEIGHT*2/9, BLUE);
-    drawLine(0, HEIGHT*3/9, WIDTH, HEIGHT*3/9, GREEN);
-    drawLine(0, HEIGHT*4/9, WIDTH, HEIGHT*4/9, CYAN);
-    drawLine(0, HEIGHT*5/9, WIDTH, HEIGHT*5/9, RED);
-    drawLine(0, HEIGHT*6/9, WIDTH, HEIGHT*6/9, MAGENTA);
-    drawLine(0, HEIGHT*7/9, WIDTH, HEIGHT*7/9, YELLOW);
-    drawLine(0, HEIGHT*8/9, WIDTH, HEIGHT*8/9, WHITE);
-}
-
-//*****************************************************************************
-//
-//! Print 8 vertical lines onto the Adafruit OlED Display
-//
-//*****************************************************************************
-
-void printVtLine(void) {
-    fillScreen(BLACK);
-    drawLine(WIDTH/9, 0 ,WIDTH/9, HEIGHT, BLACK);
-    drawLine(WIDTH*2/9, 0 ,WIDTH*2/9, HEIGHT, BLUE);
-    drawLine(WIDTH*3/9, 0 ,WIDTH*3/9, HEIGHT, GREEN);
-    drawLine(WIDTH*4/9, 0 ,WIDTH*4/9, HEIGHT, CYAN);
-    drawLine(WIDTH*5/9, 0 ,WIDTH*5/9, HEIGHT, RED);
-    drawLine(WIDTH*6/9, 0 ,WIDTH*6/9, HEIGHT, MAGENTA);
-    drawLine(WIDTH*7/9, 0 ,WIDTH*7/9, HEIGHT, YELLOW);
-    drawLine(WIDTH*8/9, 0 ,WIDTH*8/9, HEIGHT, WHITE);
-}
-
-//*****************************************************************************
-//
-//! SPI Master mode main loop
-//!
-//! This function configures SPI modelue as master and enables the channel for
-//! communication
-//!
-//! \return None.
-//
-//*****************************************************************************
 void MasterMain()
 {
+    unsigned char DevAddr = 0x18;
+    unsigned char XOffSet = 0x3;
+    unsigned char YOffSet = 0x5;
+    unsigned char Xout;
+    unsigned char Yout;
+    unsigned char RdLen = 1;
+    int x_acc;
+    int y_acc;
+    int x = 124;
+    int y = 124;
+
     //
     // Reset SPI
     //
@@ -213,47 +177,51 @@ void MasterMain()
 
     // Initialize the OLED
     Adafruit_Init();
+    fillScreen(BLACK);
+    drawCircle(x, y, 5, WHITE);
 
 
     while (1) {
-        MAP_UtilsDelay(8000000);
-        printHzLine();
+        //
+        // Write the register address to be read from.
+        // Stop bit implicitly assumed to be 0.
+        // Read the specified length of data
+        I2C_IF_Write(DevAddr,&XOffSet,1,0);
+        I2C_IF_Read(DevAddr, &Xout, RdLen);
+        //
+        // Write the register address to be read from.
+        // Stop bit implicitly assumed to be 0.
+        //Read the specified length of data
+        I2C_IF_Write(DevAddr,&YOffSet,1,0);
+        I2C_IF_Read(DevAddr, &Yout, RdLen);
+        x_acc = (int)(((signed char)Xout)*0.1);
+        y_acc = (int)(((signed char)Yout)*0.1);
+        drawCircle(x, y, 5, BLACK);
 
-        MAP_UtilsDelay(8000000);
-        printVtLine();
+        x = x + x_acc;
+        y = y + y_acc;
 
-        MAP_UtilsDelay(8000000);
-        print_hello_world();
+        //checking rang
+        if (x>=122){
+            x = 122;
+        }
+        else if (x<=6){
+            x = 6;
+        }
 
-        MAP_UtilsDelay(8000000);
-        print_font();
+        if (y>=122){
+            y = 122;
+        }
+        else if (y<=6){
+            y = 6;
+        }
 
-        MAP_UtilsDelay(8000000);
-        testlines(RED);
-
-        MAP_UtilsDelay(8000000);
-        testfastlines(RED, BLUE);
-
-        MAP_UtilsDelay(8000000);
-        testdrawrects(MAGENTA);
-
-        MAP_UtilsDelay(8000000);
-        testfillrects(YELLOW, WHITE);
-
-        MAP_UtilsDelay(8000000);
-        testfillcircles(20, RED);
-
-        MAP_UtilsDelay(8000000);
-        testdrawcircles(30, BLUE);
-
-        MAP_UtilsDelay(8000000);
-        testroundrects();
-
-        MAP_UtilsDelay(8000000);
-        testtriangles();
-
+        drawCircle(x, y, 5, WHITE);
     }
 }
+
+
+
 
 
 //*****************************************************************************
@@ -270,9 +238,9 @@ BoardInit(void)
 {
 /* In case of TI-RTOS vector table is initialize by OS itself */
 #ifndef USE_TIRTOS
-  //
-  // Set vector table base
-  //
+    //
+    // Set vector table base
+    //
 #if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
@@ -291,37 +259,57 @@ BoardInit(void)
 
 //*****************************************************************************
 //
-//! Main function for spi demo application
+//! Main function handling the I2C example
 //!
-//! \param none
+//! \param  None
 //!
-//! \return None.
-//
+//! \return None
+//! 
 //*****************************************************************************
 void main()
 {
+
+    
     //
-    // Initialize Board configurations
+    // Initialize board configurations
     //
     BoardInit();
-
+    
     //
-    // Muxing UART and SPI lines.
+    // Configure the pinmux settings for the peripherals exercised
     //
     PinMuxConfig();
+    
+    //
+    // Configuring UART
+    //
+    InitTerm();
+    ClearTerm();
+    
 
-    GPIO_IF_LedConfigure(LED1|LED2|LED3);
-    GPIO_IF_LedOff(MCU_ALL_LED_IND);
-    GPIO_IF_LedOn(MCU_RED_LED_GPIO);
     //
     // Enable the SPI module clock
     //
     MAP_PRCMPeripheralClkEnable(PRCM_GSPI,PRCM_RUN_MODE_CLK);
 
+    //
+    // I2C Init
+    //
+    I2C_IF_Open(I2C_MASTER_MODE_FST);
+    
     // Reset the peripheral
     MAP_PRCMPeripheralReset(PRCM_GSPI);
 
-    // Start the OLED Display loop
+    // Start Master function
     MasterMain();
+
 }
+
+//*****************************************************************************
+//
+// Close the Doxygen group.
+//! @
+//
+//*****************************************************************************
+
 

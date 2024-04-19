@@ -46,6 +46,8 @@
 #include "hw_memmap.h"
 #include "hw_gpio.h"
 #include "pin.h"
+#include "rom.h"
+#include "rom_map.h"
 #include "gpio.h"
 #include "prcm.h"
 
@@ -80,6 +82,7 @@ void PinMuxConfig(void)
     PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GSPI, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_UARTA0, PRCM_RUN_MODE_CLK);
+    PRCMPeripheralClkEnable(PRCM_I2CA0, PRCM_RUN_MODE_CLK);
 
     //
     // Configure PIN_61 for GPIO Output
@@ -128,4 +131,15 @@ void PinMuxConfig(void)
     // Configure PIN_57 for UART0 UART0_RX
     //
     PinTypeUART(PIN_57, PIN_MODE_3);
+
+
+    //
+    // Configure PIN_01 for I2C0 I2C_SCL
+    //
+    MAP_PinTypeI2C(PIN_01, PIN_MODE_1);
+
+    //
+    // Configure PIN_02 for I2C0 I2C_SDA
+    //
+    MAP_PinTypeI2C(PIN_02, PIN_MODE_1);
 }
