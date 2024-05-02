@@ -1,10 +1,10 @@
 //*****************************************************************************
-// pin_mux_config.h
+// pinmux.h
 //
-// configure the device pins for different signals
+// function prototype for pinmuxconfig
 //
-// Copyright (c) 2016, Texas Instruments Incorporated - http://www.ti.com/ 
-// All rights reserved.
+// Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
+// 
 // 
 //  Redistribution and use in source and binary forms, with or without 
 //  modification, are permitted provided that the following conditions 
@@ -36,16 +36,14 @@
 //
 //*****************************************************************************
 
-// This file was automatically generated on 4/12/2016 at 4:34:02 PM
-// by TI PinMux version 
+// This file was automatically generated on 7/21/2014 at 3:06:20 PM
+// by TI PinMux version 3.0.334
 //
 //*****************************************************************************
 
-#ifndef __PIN_MUX_CONFIG_H__
-#define __PIN_MUX_CONFIG_H__
-// pin 50 info
-#define IR_GPIO_PORT    GPIOA0_BASE
-#define IR_GPIO_PIN     0x1
+#ifndef __PINMUX_H__
+#define __PINMUX_H__
+
 extern void PinMuxConfig(void);
 
-#endif //  __PIN_MUX_CONFIG_H__
+#endif //  __PINMUX_H__
