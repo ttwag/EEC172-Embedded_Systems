@@ -111,6 +111,13 @@ static void SysTickHandler(void) {
     expired_num++;
 }
 
+/**
+ * GPIO Interrupt Handler (Pin 50)
+ *
+ * Triggered at every rising edge of Pin 50.
+ * Computes the 17 pulse width duration of pulse including and after the start pulse
+ * The start pulse is ~12ms
+ */
 static void GPIOA0IntHandler(void) {	// Pin 50 Handler
     unsigned long ulStatus;
     ulStatus = MAP_GPIOIntStatus(IR_GPIO_PORT, true);
@@ -122,7 +129,7 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
         uint64_t ulsystick_delta = SYSTICK_RELOAD_VAL - SysTickValueGet();
         uint64_t time = TICKS_TO_US(ulsystick_delta);
 
-        // Captures the wave only after ~12ms pulse
+        // Captures the start pulse only after ~12ms pulse
         if (10000 < time && time < 13500) start = 1;
         if (start) {
             delta_buffer[count] = time;
@@ -136,7 +143,6 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
         }
         // reset the countdown register
         SysTickReset();
-
     }
 }
 
@@ -180,6 +186,16 @@ static void SysTickInit(void) {
     MAP_SysTickEnable();
 }
 
+//*****************************************************************************
+//
+//! The decoder decodes the signal pulse width time stored in the delta_buffer
+//! into a single controller button number
+//!
+//! \param  None
+//!
+//! \return Controller button number
+//
+//*****************************************************************************
 int decoder() {
     int sum = 0x0;
     int i;
@@ -262,11 +278,14 @@ int main() {
     Message("\n\n\n\r");
 
     while (1) {
+        // If interrupt has finished writing the signal pulse width buffer
         if (readReady) {
             int num = decoder();
+            // Print the decoded button if it's decoded correctly
             if (num != -1) {
                 Report("%d\n", decoder());
             }
+            // Prevent printing a number multiple times
             readReady = 0;
         }
     }
