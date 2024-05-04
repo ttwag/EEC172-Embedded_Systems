@@ -64,9 +64,10 @@ extern void (* const g_pfnVectors[])(void);
 volatile uint64_t ulsystick_delta_us = 0;
 volatile int systick_cnt = 0;
 volatile int systick_expired = 0;
-volatile int flag = 0;
 volatile int count = 0;
-volatile uint64_t delta_buffer[100];
+volatile uint64_t delta_buffer[20];
+volatile int start = 0;
+volatile int readReady = 0;
 
 
 //*****************************************************************************
@@ -107,6 +108,7 @@ static void SysTickHandler(void) {
     systick_cnt++;
     systick_expired = 1;
     ulsystick_delta_us = 0;
+    expired_num++;
 }
 
 static void GPIOA0IntHandler(void) {	// Pin 50 Handler
@@ -115,19 +117,26 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
     MAP_GPIOIntClear(IR_GPIO_PORT, ulStatus);
 
     if (ulStatus & IR_GPIO_PIN) {
-        if (systick_expired) {
-            systick_expired = 0;
+
+        // read the countdown register and compute elapsed cycles
+        uint64_t ulsystick_delta = SYSTICK_RELOAD_VAL - SysTickValueGet();
+        uint64_t time = TICKS_TO_US(ulsystick_delta);
+
+        // Captures the wave only after ~12ms pulse
+        if (10000 < time && time < 13500) start = 1;
+        if (start) {
+            delta_buffer[count] = time;
+            count++;
+            if (count >= 17) {
+                start = 0;
+                count = 0;
+                // Set readReady high so main can print it
+                readReady = 1;
+            }
         }
-        else {
-            // read the countdown register and compute elapsed cycles
-            uint64_t ulsystick_delta = SYSTICK_RELOAD_VAL - SysTickValueGet();
-            //ulsystick_delta_us = TICKS_TO_US(ulsystick_delta);
-            delta_buffer[count] = TICKS_TO_US(ulsystick_delta);
-            flag = 1;
-            count = count + 1;
-            // reset the countdown register
-            SysTickReset();
-        }
+        // reset the countdown register
+        SysTickReset();
+
     }
 }
 
@@ -169,6 +178,43 @@ static void SysTickInit(void) {
 
     // enable the systick module itself
     MAP_SysTickEnable();
+}
+
+int decoder() {
+    int sum = 0x0;
+    int i;
+    for (i = 9; i < 17; i++) {
+        sum = sum << 1;
+        if (delta_buffer[i] > 2000) {
+            sum = sum | 0x1;
+        }
+    }
+    if (sum == 132) {
+        return 1;
+    } else if (sum == 68) {
+        return 2;
+    } else if (sum == 196) {
+        return 3;
+    } else if (sum == 36) {
+        return 4;
+    } else if (sum == 164) {
+        return 5;
+    } else if (sum == 100) {
+        return 6;
+    } else if (sum == 228) {
+        return 7;
+    } else if (sum == 20) {
+        return 8;
+    } else if (sum == 148) {
+        return 9;
+    } else if (sum == 4) {
+        return 0;
+    } else if (sum == 56) {
+        return 100; // Mute
+    } else if (sum == 160) {
+        return 200; // Last
+    }
+    else return -1;
 }
 
 //****************************************************************************
@@ -216,20 +262,12 @@ int main() {
     Message("\n\n\n\r");
 
     while (1) {
-        //while (!flag){;}
-        //uint64_t tmp_delta_us = ulsystick_delta_us;
-//        if (flag) {
-//            GPIO_IF_LedToggle(MCU_RED_LED_GPIO);
-//            Report("measured pulse width: %llu us\n", tmp_delta_us);
-//            Report("measured pulse width: %d us\n", ulsystick_delta_us);
-//            Report("Count: %d\n", count);
-//            flag = 0;
-//        }
-        if (GPIOPinRead(GPIOA1_BASE, 0x20) & 0x20) {
-            int i;
-            for (i = 0; i < count; i++) {
-                Report("Pulse %d, Measured pulse width: %llu us\n", i, delta_buffer[i]);
+        if (readReady) {
+            int num = decoder();
+            if (num != -1) {
+                Report("%d\n", decoder());
             }
+            readReady = 0;
         }
     }
 }
