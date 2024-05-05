@@ -36,8 +36,8 @@
 //
 //*****************************************************************************
 
-// This file was automatically generated on 4/15/2024 at 11:20:20 AM
-// by TI PinMux version 1.19.0+3426
+// This file was automatically generated on 4/12/2016 at 4:33:38 PM
+// by TI PinMux version 
 //
 //*****************************************************************************
 
@@ -49,28 +49,30 @@
 #include "gpio.h"
 #include "prcm.h"
 
+
+
+
 //*****************************************************************************
 void PinMuxConfig(void)
 {
-
     //
     // Enable Peripheral Clocks
     //
-    
-    PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GPIOA0, PRCM_RUN_MODE_CLK);
-    PRCMPeripheralClkEnable(PRCM_GSPI, PRCM_RUN_MODE_CLK);
+    PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
+    PRCMPeripheralClkEnable(PRCM_GPIOA2, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_UARTA0, PRCM_RUN_MODE_CLK);
+
 
     //
     // Set unused pins to PIN_MODE_0 with the exception of JTAG pins 16,17,19,20
     //
-    PinModeSet(PIN_01, PIN_MODE_0);
-    PinModeSet(PIN_02, PIN_MODE_0);
+
     PinModeSet(PIN_03, PIN_MODE_0);
-    PinModeSet(PIN_04, PIN_MODE_0);
+    PinModeSet(PIN_05, PIN_MODE_0);
+    PinModeSet(PIN_06, PIN_MODE_0);
+    PinModeSet(PIN_07, PIN_MODE_0);
     PinModeSet(PIN_08, PIN_MODE_0);
-    PinModeSet(PIN_15, PIN_MODE_0);
     PinModeSet(PIN_18, PIN_MODE_0);
     PinModeSet(PIN_21, PIN_MODE_0);
     PinModeSet(PIN_45, PIN_MODE_0);
@@ -79,49 +81,41 @@ void PinMuxConfig(void)
     PinModeSet(PIN_58, PIN_MODE_0);
     PinModeSet(PIN_59, PIN_MODE_0);
     PinModeSet(PIN_60, PIN_MODE_0);
-    PinModeSet(PIN_64, PIN_MODE_0);
-    
+    PinModeSet(PIN_61, PIN_MODE_0);
+    PinModeSet(PIN_62, PIN_MODE_0);
+    PinModeSet(PIN_63, PIN_MODE_0);
+
+    // Switch
+    //
+    // Configure PIN_04 for GPIO Input
+    //
+    PinTypeGPIO(PIN_04, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA1_BASE, 0x20, GPIO_DIR_MODE_IN);
+
+    // LED
+    //
+    // Configure PIN_64 for GPIOOutput
+    //
+    PinTypeGPIO(PIN_64, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA1_BASE, 0x2, GPIO_DIR_MODE_OUT);
 
     //
-    // Configure PIN_61 for GPIO Output
-    // DC
+    // Configure PIN_01 for GPIOOutput
     //
-    PinTypeGPIO(PIN_61, PIN_MODE_0, false);
-    GPIODirModeSet(GPIOA0_BASE, 0x40, GPIO_DIR_MODE_OUT);
+    PinTypeGPIO(PIN_01, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA1_BASE, 0x4, GPIO_DIR_MODE_OUT);
 
     //
-    // Configure PIN_62 for GPIO Output
-    // Reset
+    // Configure PIN_02 for GPIOOutput
     //
-    PinTypeGPIO(PIN_62, PIN_MODE_0, false);
-    GPIODirModeSet(GPIOA0_BASE, 0x80, GPIO_DIR_MODE_OUT);
+    PinTypeGPIO(PIN_02, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_OUT);
 
-    //
-    // Configure PIN_63 for GPIO Output
-    // OLED CS
-    //
-    PinTypeGPIO(PIN_63, PIN_MODE_0, false);
-    GPIODirModeSet(GPIOA1_BASE, 0x1, GPIO_DIR_MODE_OUT);
 
-    //
-    // Configure PIN_50 for SPI0 GSPI_CS
-    //
-    PinTypeSPI(PIN_50, PIN_MODE_9);
 
-    //
-    // Configure PIN_05 for SPI0 GSPI_CLK
-    //
-    PinTypeSPI(PIN_05, PIN_MODE_7);
-
-    //
-    // Configure PIN_06 for SPI0 GSPI_MISO
-    //
-    PinTypeSPI(PIN_06, PIN_MODE_7);
-
-    //
-    // Configure PIN_07 for SPI0 GSPI_MOSI
-    //
-    PinTypeSPI(PIN_07, PIN_MODE_7);
+    // Configure PIN_50 for GPIO Input
+    PinTypeGPIO(PIN_50, PIN_MODE_0, false);
+    GPIODirModeSet(IR_GPIO_PORT, IR_GPIO_PIN, GPIO_DIR_MODE_IN);
 
     //
     // Configure PIN_55 for UART0 UART0_TX
