@@ -34,10 +34,12 @@
 #include "gpio.h"
 #include "utils.h"
 #include "systick.h"
+#include "pin.h"
 
 // Common interface includes
 #include "gpio_if.h"
 #include "uart_if.h"
+#include "uart.h"
 
 #include "pin_mux_config.h"
 
@@ -69,6 +71,8 @@ volatile uint64_t delta_buffer[20];
 volatile int start = 0;
 volatile int readReady = 0;
 
+// Uart Communication
+volatile int receiveReady = 0;
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
@@ -108,7 +112,7 @@ static void SysTickHandler(void) {
     systick_cnt++;
     systick_expired = 1;
     ulsystick_delta_us = 0;
-    expired_num++;
+//    expired_num++;
 }
 
 /**
@@ -143,6 +147,20 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
         }
         // reset the countdown register
         SysTickReset();
+    }
+}
+
+static void UARTIntHandler(void) {
+    unsigned long ulStatus;
+    ulStatus = MAP_UARTIntStatus(UART_INT, true);
+    MAP_UARTIntClear(UART_INT, ulStatus);
+    if (ulStatus & PIN_59) {
+        receiveReady = 1;
+//        while (uart_available) {
+//            buffer[i] = uartcharget();
+//            i++;
+//        }
+//        uartReady = 1;
     }
 }
 
@@ -259,17 +277,24 @@ int main() {
 
     GPIO_IF_LedOff(MCU_ALL_LED_IND);
 
-
+    // GPIO Interrupt
     // Register the interrupt handlers
     MAP_GPIOIntRegister(IR_GPIO_PORT, GPIOA0IntHandler);
-
     // Configure interrupts on rising edges
     MAP_GPIOIntTypeSet(IR_GPIO_PORT, IR_GPIO_PIN, GPIO_RISING_EDGE); // read ir_output
     uint64_t ulStatus = MAP_GPIOIntStatus(IR_GPIO_PORT, false);
     MAP_GPIOIntClear(IR_GPIO_PORT, ulStatus);
-
     // Enable interrupts on ir_output
     MAP_GPIOIntEnable(IR_GPIO_PORT, IR_GPIO_PIN);
+
+    // UART Interrupt
+    MAP_UARTConfigSetExpClk(UART_INT, MAP_PRCMPeripheralClockGet(UART_PERIPH),
+                            UART_BAUD_RATE, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+                            UART_CONFIG_PAR_NONE));
+    MAP_UARTIntRegister(UART_INT, UARTIntHandler);
+    unsigned long ulStatus_uart = MAP_UARTIntStatus(UART_INT, false);
+    MAP_UARTIntClear(UART_INT, ulStatus_uart);
+    MAP_UARTIntEnable(UART_INT, UART_INT_RX);
 
 
     Message("\t\t****************************************************\n\r");
@@ -278,16 +303,27 @@ int main() {
     Message("\n\n\n\r");
 
     while (1) {
-        // If interrupt has finished writing the signal pulse width buffer
-        if (readReady) {
-            int num = decoder();
-            // Print the decoded button if it's decoded correctly
-            if (num != -1) {
-                Report("%d\n", decoder());
-            }
-            // Prevent printing a number multiple times
-            readReady = 0;
+        if (GPIOPinRead(GPIOA1_BASE, 0x20) & 0x20) {
+            // Send Message
+            GPIO_IF_LedOn(MCU_GREEN_LED_GPIO);
+            UARTCharPut(UART_INT, 'H');
         }
+        if (receiveReady) {
+            // LED
+            GPIO_IF_LedOn(MCU_RED_LED_GPIO);
+            receiveReady = 0;
+        }
+
+        // If interrupt has finished writing the signal pulse width buffer
+//        if (readReady) {
+//            int num = decoder();
+//            // Print the decoded button if it's decoded correctly
+//            if (num != -1) {
+//                Report("%d\n", num);
+//            }
+//            // Prevent printing a number multiple times
+//            readReady = 0;
+//        }
     }
 }
 
