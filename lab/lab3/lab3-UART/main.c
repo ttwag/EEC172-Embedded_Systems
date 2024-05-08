@@ -73,6 +73,8 @@ volatile int readReady = 0;
 
 // Uart Communication
 volatile int receiveReady = 0;
+volatile char uart_buffer[50];
+volatile int uart_buffer_ind = 0;
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
@@ -112,7 +114,6 @@ static void SysTickHandler(void) {
     systick_cnt++;
     systick_expired = 1;
     ulsystick_delta_us = 0;
-//    expired_num++;
 }
 
 /**
@@ -153,15 +154,14 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
 static void UARTIntHandler(void) {
     unsigned long ulStatus;
     ulStatus = MAP_UARTIntStatus(UART_INT, true);
-    //MAP_UARTIntClear(UART_INT, ulStatus);
     MAP_UARTIntClear(UART_INT, UART_INT_RX);
     if (ulStatus & UART_INT_RX) {
+        uart_buffer_ind = 0;
+        while (UARTCharsAvail(UART_INT)) {
+            uart_buffer[uart_buffer_ind] = UARTCharGetNonBlocking(UART_INT);
+            uart_buffer_ind++;
+        }
         receiveReady = 1;
-//        while (uart_available) {
-//            buffer[i] = uartcharget();
-//            i++;
-//        }
-//        uartReady = 1;
     }
 }
 
@@ -309,11 +309,21 @@ int main() {
         if (GPIOPinRead(GPIOA1_BASE, 0x20) & 0x20) {
             // Send Message
             GPIO_IF_LedOn(MCU_GREEN_LED_GPIO);
-            UARTCharPut(UART_INT, 'H');
+            char hello[] = "Hello From CC3200!";
+            int i;
+            for (i = 0; i < 18; i++) {
+                UARTCharPut(UART_INT, hello[i]);
+            }
         }
         if (receiveReady) {
+            // Receive Message
             // LED
             GPIO_IF_LedOn(MCU_RED_LED_GPIO);
+            int i;
+            for (i = 0; i < uart_buffer_ind; i++) {
+                Report("%c", uart_buffer[i]);
+            }
+            Report("\n");
             receiveReady = 0;
         }
 
