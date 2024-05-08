@@ -11,7 +11,6 @@ ORDERED_OBJS += \
 "./gpio_if.obj" \
 "./i2c_if.obj" \
 "./main.obj" \
-"./main1.obj" \
 "./pin_mux_config.obj" \
 "./startup_ccs.obj" \
 "./uart_if.obj" \
@@ -152,8 +151,8 @@ lab2-pt3.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "gpio_if.obj" "i2c_if.obj" "main.obj" "main1.obj" "pin_mux_config.obj" "startup_ccs.obj" "uart_if.obj" "oled/Adafruit_GFX.obj" "oled/Adafruit_OLED.obj" "oled/oled_test.obj" 
-	-$(RM) "gpio_if.d" "i2c_if.d" "main.d" "main1.d" "pin_mux_config.d" "startup_ccs.d" "uart_if.d" "oled/Adafruit_GFX.d" "oled/Adafruit_OLED.d" "oled/oled_test.d" 
+	-$(RM) "gpio_if.obj" "i2c_if.obj" "main.obj" "pin_mux_config.obj" "startup_ccs.obj" "uart_if.obj" "oled/Adafruit_GFX.obj" "oled/Adafruit_OLED.obj" "oled/oled_test.obj" 
+	-$(RM) "gpio_if.d" "i2c_if.d" "main.d" "pin_mux_config.d" "startup_ccs.d" "uart_if.d" "oled/Adafruit_GFX.d" "oled/Adafruit_OLED.d" "oled/oled_test.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

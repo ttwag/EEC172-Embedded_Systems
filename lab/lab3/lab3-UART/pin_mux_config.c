@@ -128,6 +128,7 @@ void PinMuxConfig(void)
     //
     PinTypeUART(PIN_57, PIN_MODE_3);
 
+    // UART Interrupt
     //
     // Configure PIN_58 for UART1 UART1_TX
     //

@@ -76,6 +76,8 @@ volatile int receiveReady = 0;
 volatile char uart_buffer[50];
 volatile int uart_buffer_ind = 0;
 
+
+
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
 //*****************************************************************************
@@ -288,10 +290,13 @@ int main() {
     // Enable interrupts on ir_output
     MAP_GPIOIntEnable(IR_GPIO_PORT, IR_GPIO_PIN);
 
-    // UART Interrupt
+    // UART
     MAP_UARTConfigSetExpClk(UART_INT, MAP_PRCMPeripheralClockGet(UART_PERIPH),
                             UART_BAUD_RATE, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
                             UART_CONFIG_PAR_NONE));
+    MAP_UARTEnable(UART_INT);
+    MAP_UARTFIFOEnable(UART_INT);
+    // UART Interrupt
     MAP_UARTIntRegister(UART_INT, UARTIntHandler);
     //unsigned long ulStatus_uart = MAP_UARTIntStatus(UART_INT, false);
     //MAP_UARTIntClear(UART_INT, ulStatus_uart);
@@ -303,17 +308,12 @@ int main() {
     Message("\t\t\tWaveform\n\r");
     Message("\t\t ****************************************************\n\r");
     Message("\n\n\n\r");
-
     while (1) {
         // SW
         if (GPIOPinRead(GPIOA1_BASE, 0x20) & 0x20) {
             // Send Message
             GPIO_IF_LedOn(MCU_GREEN_LED_GPIO);
-            char hello[] = "Hello From CC3200!";
-            int i;
-            for (i = 0; i < 18; i++) {
-                UARTCharPut(UART_INT, hello[i]);
-            }
+            UARTCharPutNonBlocking(UART_INT, 'h');
         }
         if (receiveReady) {
             // Receive Message
@@ -327,16 +327,37 @@ int main() {
             receiveReady = 0;
         }
 
-        // If interrupt has finished writing the signal pulse width buffer
-//        if (readReady) {
-//            int num = decoder();
-//            // Print the decoded button if it's decoded correctly
-//            if (num != -1) {
-//                Report("%d\n", num);
-//            }
-//            // Prevent printing a number multiple times
-//            readReady = 0;
-//        }
+         //If interrupt has finished writing the signal pulse width buffer
+        if (readReady) {
+            int num = decoder();
+            // Print the decoded button if it's decoded correctly
+            if (num != -1) {
+                Report("%d\n", num);
+            }
+            if (num == 200) {
+                GPIO_IF_LedOn(MCU_GREEN_LED_GPIO);
+                UARTCharPutNonBlocking(UART_INT, 'h');
+
+                UARTCharPutNonBlocking(UART_INT, 'a');
+
+                UARTCharPutNonBlocking(UART_INT, 'b');
+
+                UARTCharPutNonBlocking(UART_INT, 'c');
+
+                UARTCharPutNonBlocking(UART_INT, 'd');
+
+                UARTCharPutNonBlocking(UART_INT, 'd');
+
+                UARTCharPutNonBlocking(UART_INT, 'd');
+
+                UARTCharPutNonBlocking(UART_INT, 'd');
+                MAP_UtilsDelay(8000000);
+                GPIO_IF_LedOff(MCU_GREEN_LED_GPIO);
+
+            }
+            // Prevent printing a number multiple times
+            readReady = 0;
+        }
     }
 }
 

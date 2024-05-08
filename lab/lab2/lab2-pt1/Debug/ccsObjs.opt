@@ -1,6 +1,7 @@
 "./gpio_if.obj"
 "./main.obj"
 "./pin_mux_config.obj"
+"./pin_mux_config1.obj"
 "./startup_ccs.obj"
 "./uart_if.obj"
 "./oled/Adafruit_GFX.obj"

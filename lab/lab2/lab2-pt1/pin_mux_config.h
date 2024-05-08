@@ -46,4 +46,12 @@
 
 extern void PinMuxConfig(void);
 
+// Pin 50 info
+#define IR_GPIO_PORT    GPIOA0_BASE
+#define IR_GPIO_PIN     0x1
+
+// UART1 Interrupt
+#define UART_INT UARTA1_BASE
+#define UART_PERIPH PRCM_UARTA1
+
 #endif //  __PIN_MUX_CONFIG_H__

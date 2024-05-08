@@ -1,7 +1,6 @@
 "./gpio_if.obj"
 "./i2c_if.obj"
 "./main.obj"
-"./main1.obj"
 "./pin_mux_config.obj"
 "./startup_ccs.obj"
 "./uart_if.obj"

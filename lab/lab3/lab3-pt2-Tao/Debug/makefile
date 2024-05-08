@@ -123,21 +123,21 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-lab3-pt2-2.out 
+lab3-pt2-Tao.out 
 
 EXE_OUTPUTS__QUOTED += \
-"lab3-pt2-2.out" 
+"lab3-pt2-Tao.out" 
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "lab3-pt2-2.out"
+	@$(MAKE) --no-print-directory -Onone "lab3-pt2-Tao.out"
 
 # Tool invocations
-lab3-pt2-2.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+lab3-pt2-Tao.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=none -me -Ooff --define=ccs --define=cc3200 --define=NON_NETWORK -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"lab3-pt2-2.map" --heap_size=0x800 --stack_size=0x800 -i"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib" -i"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="lab3-pt2-2_linkInfo.xml" --rom_model -o "lab3-pt2-2.out" $(ORDERED_OBJS)
+	"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=none -me -Ooff --define=ccs --define=cc3200 --define=NON_NETWORK -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"lab3-pt2-Tao.map" --heap_size=0x800 --stack_size=0x800 -i"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib" -i"/Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="lab3-pt2-Tao_linkInfo.xml" --rom_model -o "lab3-pt2-Tao.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 	@$(MAKE) --no-print-directory post-build
@@ -151,7 +151,7 @@ clean:
 	-@echo ' '
 
 post-build:
-	-/Applications/ti/ccs/utils/tiobj2bin/tiobj2bin lab3-pt2-2.out lab3-pt2-2.bin /Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armofd /Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armhex /Applications/ti/ccs/utils/tiobj2bin/mkhex4bin
+	-/Applications/ti/ccs/utils/tiobj2bin/tiobj2bin lab3-pt2-Tao.out lab3-pt2-Tao.bin /Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armofd /Applications/ti/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armhex /Applications/ti/ccs/utils/tiobj2bin/mkhex4bin
 	-@echo ' '
 
 .PHONY: all clean dependents
