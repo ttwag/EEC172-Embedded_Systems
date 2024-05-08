@@ -153,8 +153,9 @@ static void GPIOA0IntHandler(void) {	// Pin 50 Handler
 static void UARTIntHandler(void) {
     unsigned long ulStatus;
     ulStatus = MAP_UARTIntStatus(UART_INT, true);
-    MAP_UARTIntClear(UART_INT, ulStatus);
-    if (ulStatus & PIN_59) {
+    //MAP_UARTIntClear(UART_INT, ulStatus);
+    MAP_UARTIntClear(UART_INT, UART_INT_RX);
+    if (ulStatus & UART_INT_RX) {
         receiveReady = 1;
 //        while (uart_available) {
 //            buffer[i] = uartcharget();
@@ -292,8 +293,9 @@ int main() {
                             UART_BAUD_RATE, (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
                             UART_CONFIG_PAR_NONE));
     MAP_UARTIntRegister(UART_INT, UARTIntHandler);
-    unsigned long ulStatus_uart = MAP_UARTIntStatus(UART_INT, false);
-    MAP_UARTIntClear(UART_INT, ulStatus_uart);
+    //unsigned long ulStatus_uart = MAP_UARTIntStatus(UART_INT, false);
+    //MAP_UARTIntClear(UART_INT, ulStatus_uart);
+    MAP_UARTIntClear(UART_INT, UART_INT_RX);
     MAP_UARTIntEnable(UART_INT, UART_INT_RX);
 
 
@@ -303,6 +305,7 @@ int main() {
     Message("\n\n\n\r");
 
     while (1) {
+        // SW
         if (GPIOPinRead(GPIOA1_BASE, 0x20) & 0x20) {
             // Send Message
             GPIO_IF_LedOn(MCU_GREEN_LED_GPIO);
