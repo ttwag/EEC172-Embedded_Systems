@@ -476,14 +476,23 @@ void drawChar(int x, int y, unsigned char c,
   }
 }
 
-void Outstr (char * str) {
+void OutstrI (char * str) {
 	char * ptr;
 	
 	ptr = str;
 	while (*ptr) {
-		drawChar(cursor_x, WIDTH/2, *ptr, textcolor, textbgcolor, 2);
+		drawChar(cursor_x, WIDTH*3/4, *ptr++, textcolor, textbgcolor, 2);
 		cursor_x += 11*textsize;
-		ptr++;
+	}
+}
+
+void OutstrO (char * str) {
+	char * ptr;
+	
+	ptr = str;
+	while (*ptr) {
+		drawChar(cursor_x, WIDTH*1/4, *ptr++, textcolor, textbgcolor, 2);
+		cursor_x += 11*textsize;
 	}
 }
 

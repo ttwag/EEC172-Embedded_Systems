@@ -59,7 +59,6 @@
 #include "hw_memmap.h"
 #include "hw_common_reg.h"
 #include "hw_ints.h"
-#include "spi.h"
 #include "rom.h"
 #include "rom_map.h"
 #include "utils.h"
@@ -67,6 +66,7 @@
 #include "gpio.h"
 #include "gpio_if.h"
 #include "uart.h"
+#include "spi.h"
 #include "interrupt.h"
 
 // Common interface includes
@@ -174,6 +174,7 @@ void printVtLine(void) {
     drawLine(WIDTH*8/9, 0 ,WIDTH*8/9, HEIGHT, WHITE);
 }
 
+
 //*****************************************************************************
 //
 //! SPI Master mode main loop
@@ -214,8 +215,10 @@ void MasterMain()
     // Initialize the OLED
     Adafruit_Init();
 
-
+    fillScreen(BLACK);
     while (1) {
+        Outstr("Hello\0");
+
         MAP_UtilsDelay(8000000);
         printHzLine();
 

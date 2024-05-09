@@ -36,21 +36,22 @@
 //
 //*****************************************************************************
 
-// This file was automatically generated on 4/12/2016 at 4:34:02 PM
-// by TI PinMux version 
+// This file was automatically generated on 4/11/2024 at 9:44:40 PM
+// by TI PinMux version 1.19.0+3426
 //
 //*****************************************************************************
 
 #ifndef __PIN_MUX_CONFIG_H__
 #define __PIN_MUX_CONFIG_H__
-// pin 50 info
+
+extern void PinMuxConfig(void);
+
+// Pin 50 info
 #define IR_GPIO_PORT    GPIOA0_BASE
 #define IR_GPIO_PIN     0x1
 
-// UART Interrupt
+// UART1 Interrupt
 #define UART_INT UARTA1_BASE
 #define UART_PERIPH PRCM_UARTA1
-
-extern void PinMuxConfig(void);
 
 #endif //  __PIN_MUX_CONFIG_H__

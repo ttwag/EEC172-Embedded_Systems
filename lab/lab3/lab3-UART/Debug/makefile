@@ -13,6 +13,9 @@ ORDERED_OBJS += \
 "./pin_mux_config.obj" \
 "./startup_ccs.obj" \
 "./uart_if.obj" \
+"./oled/Adafruit_GFX.obj" \
+"./oled/Adafruit_OLED.obj" \
+"./oled/oled_test.obj" \
 "../cc3200v1p32.cmd" \
 $(GEN_CMDS__FLAG) \
 -l"/Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/ccs/Release/driverlib.a" \
@@ -26,7 +29,9 @@ RMDIR := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include oled/subdir_vars.mk
 -include subdir_rules.mk
+-include oled/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -145,8 +150,8 @@ lab3-UART.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "gpio_if.obj" "main.obj" "pin_mux_config.obj" "startup_ccs.obj" "uart_if.obj" 
-	-$(RM) "gpio_if.d" "main.d" "pin_mux_config.d" "startup_ccs.d" "uart_if.d" 
+	-$(RM) "gpio_if.obj" "main.obj" "pin_mux_config.obj" "startup_ccs.obj" "uart_if.obj" "oled/Adafruit_GFX.obj" "oled/Adafruit_OLED.obj" "oled/oled_test.obj" 
+	-$(RM) "gpio_if.d" "main.d" "pin_mux_config.d" "startup_ccs.d" "uart_if.d" "oled/Adafruit_GFX.d" "oled/Adafruit_OLED.d" "oled/oled_test.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

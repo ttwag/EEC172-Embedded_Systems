@@ -14,7 +14,6 @@ main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/inc/hw_types.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/inc/hw_memmap.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/inc/hw_common_reg.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/inc/hw_ints.h
-main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/rom.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/rom_map.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/rom_patch.h
@@ -23,6 +22,7 @@ main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/prcm.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/gpio.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/example/common/gpio_if.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/uart.h
+main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/interrupt.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/example/common/uart_if.h
 main.obj: ../pin_mux_config.h
@@ -59,8 +59,6 @@ main.obj: ../oled/glcdfont.h
 
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/inc/hw_ints.h:
 
-/Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h:
-
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/rom.h:
 
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/rom_map.h:
@@ -76,6 +74,8 @@ main.obj: ../oled/glcdfont.h
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/example/common/gpio_if.h:
 
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/uart.h:
+
+/Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h:
 
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/interrupt.h:
 

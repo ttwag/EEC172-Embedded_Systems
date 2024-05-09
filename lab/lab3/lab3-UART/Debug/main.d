@@ -32,6 +32,11 @@ main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/example/common/gpio_if
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/example/common/uart_if.h
 main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/uart.h
 main.obj: ../pin_mux_config.h
+main.obj: /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h
+main.obj: ../oled/Adafruit_SSD1351.h
+main.obj: ../oled/Adafruit_GFX.h
+main.obj: ../oled/oled_test.h
+main.obj: ../oled/glcdfont.h
 
 ../main.c:
 
@@ -96,4 +101,14 @@ main.obj: ../pin_mux_config.h
 /Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/uart.h:
 
 ../pin_mux_config.h:
+
+/Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk/driverlib/spi.h:
+
+../oled/Adafruit_SSD1351.h:
+
+../oled/Adafruit_GFX.h:
+
+../oled/oled_test.h:
+
+../oled/glcdfont.h:
 

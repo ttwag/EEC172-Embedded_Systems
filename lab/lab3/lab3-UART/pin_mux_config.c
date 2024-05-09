@@ -68,11 +68,7 @@ void PinMuxConfig(void)
     //
     // Set unused pins to PIN_MODE_0 with the exception of JTAG pins 16,17,19,20
     //
-
     PinModeSet(PIN_03, PIN_MODE_0);
-    PinModeSet(PIN_05, PIN_MODE_0);
-    PinModeSet(PIN_06, PIN_MODE_0);
-    PinModeSet(PIN_07, PIN_MODE_0);
     PinModeSet(PIN_08, PIN_MODE_0);
     PinModeSet(PIN_18, PIN_MODE_0);
     PinModeSet(PIN_21, PIN_MODE_0);
@@ -82,18 +78,24 @@ void PinMuxConfig(void)
     PinModeSet(PIN_58, PIN_MODE_0);
     PinModeSet(PIN_59, PIN_MODE_0);
     PinModeSet(PIN_60, PIN_MODE_0);
-    PinModeSet(PIN_61, PIN_MODE_0);
-    PinModeSet(PIN_62, PIN_MODE_0);
-    PinModeSet(PIN_63, PIN_MODE_0);
-
-    // Switch
+    
+    
+//****************************************************************************
+    //
+    // Switch for Debug
+    //
+//****************************************************************************
     //
     // Configure PIN_04 for GPIO Input
     //
     PinTypeGPIO(PIN_04, PIN_MODE_0, false);
     GPIODirModeSet(GPIOA1_BASE, 0x20, GPIO_DIR_MODE_IN);
 
-    // LED
+//****************************************************************************
+    //
+    // LED for Debug
+    //
+//****************************************************************************
     //
     // Configure PIN_64 for GPIOOutput
     //
@@ -112,12 +114,63 @@ void PinMuxConfig(void)
     PinTypeGPIO(PIN_02, PIN_MODE_0, false);
     GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_OUT);
 
-
-
+//****************************************************************************
+    //
+    // IR Receiver
+    //
+//****************************************************************************
+    // 
     // Configure PIN_50 for GPIO Input
+    //
     PinTypeGPIO(PIN_50, PIN_MODE_0, false);
     GPIODirModeSet(IR_GPIO_PORT, IR_GPIO_PIN, GPIO_DIR_MODE_IN);
+    
+//****************************************************************************
+    //
+    // OLED
+    //
+//****************************************************************************
 
+    //
+    // Configure PIN_07 for SPI0 GSPI_MOSI
+    //
+    PinTypeSPI(PIN_07, PIN_MODE_7);
+
+    //
+    // Configure PIN_05 for SPI0 GSPI_CLK
+    //
+    PinTypeSPI(PIN_05, PIN_MODE_7);
+
+    // Configure PIN_61 for GPIO Output
+    // DC
+    //
+    PinTypeGPIO(PIN_61, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA0_BASE, 0x40, GPIO_DIR_MODE_OUT);
+
+    //
+    // Configure PIN_62 for GPIO Output
+    // Reset
+    //
+    PinTypeGPIO(PIN_62, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA0_BASE, 0x80, GPIO_DIR_MODE_OUT);
+
+    //
+    // Configure PIN_63 for GPIO Output
+    // OLED CS
+    //
+    PinTypeGPIO(PIN_63, PIN_MODE_0, false);
+    GPIODirModeSet(GPIOA1_BASE, 0x1, GPIO_DIR_MODE_OUT);
+
+    //
+    // Configure PIN_06 for SPI0 GSPI_MISO (Not Used)
+    //
+    PinTypeSPI(PIN_06, PIN_MODE_7);
+
+//****************************************************************************
+//
+//  UART0 Serial Communication with Terminal
+//
+//****************************************************************************
     //
     // Configure PIN_55 for UART0 UART0_TX
     //
@@ -128,7 +181,11 @@ void PinMuxConfig(void)
     //
     PinTypeUART(PIN_57, PIN_MODE_3);
 
-    // UART Interrupt
+//****************************************************************************
+//
+//  UART1 Serial Communication with Other CC3200
+//
+//****************************************************************************
     //
     // Configure PIN_58 for UART1 UART1_TX
     //
@@ -138,5 +195,4 @@ void PinMuxConfig(void)
     // Configure PIN_59 for UART1 UART1_RX
     //
     PinTypeUART(PIN_59, PIN_MODE_6);
-
 }
