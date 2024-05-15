@@ -59,9 +59,8 @@
 MEMORY
 {
     /* Application uses internal RAM for program and data */
-    /* RAM Blocks are modified for CC3200 ES 1.33 (XCC3200JR) which supports 240KB (256-16) APP RAM size */
-    SRAM_CODE (RWX) : origin = 0x20004000, length = 0x19000  /* 100 KB */
-    SRAM_DATA (RWX) : origin = 0x2001D000, length = 0x23000  /* 140 KB */
+    SRAM_CODE (RWX) : origin = 0x20004000, length = 0x13000
+    SRAM_DATA (RWX) : origin = 0x20017000, length = 0x19000
 }
 
 /* Section allocation in memory */
