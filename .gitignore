@@ -4,16 +4,13 @@
 # CCS Studio
 dvt
 RemoteSystemsTempFiles
-
 Release
-.settings
-.launches
 .metadata
 .jxbrowser.userdata
-
 README.html
-.project
-.cproject
-.ccsproject
+Debug
 
+# AWS
+eec172_credentials.csv
+tao_things_cert
 
