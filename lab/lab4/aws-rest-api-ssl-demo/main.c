@@ -83,22 +83,23 @@
 
 
 //NEED TO UPDATE THIS FOR IT TO WORK!
-#define DATE                26    /* Current Date */
-#define MONTH               1     /* Month 1-12 */
-#define YEAR                2019  /* Current year */
-#define HOUR                10    /* Time - hours */
-#define MINUTE              39    /* Time - minutes */
+#define DATE                20    /* Current Date */
+#define MONTH               5     /* Month 1-12 */
+#define YEAR                2024  /* Current year */
+#define HOUR                8    /* Time - hours */
+#define MINUTE              0    /* Time - minutes */
 #define SECOND              0     /* Time - seconds */
 
 
 #define APPLICATION_NAME      "SSL"
 #define APPLICATION_VERSION   "SQ24"
-#define SERVER_NAME           "a26ypaoxj1nj7v-ats.iot.us-west-2.amazonaws.com" // CHANGE ME
+#define SERVER_NAME           "a2m3q4kfchczuu-ats.iot.us-west-1.amazonaws.com" // CHANGE ME
 #define GOOGLE_DST_PORT       8443
 
 
-#define POSTHEADER "POST /things/CC3200_Thing/shadow HTTP/1.1\r\n"             // CHANGE ME
-#define HOSTHEADER "Host: a26ypaoxj1nj7v-ats.iot.us-west-2.amazonaws.com\r\n"  // CHANGE ME
+#define POSTHEADER "POST /things/Tao_CC3200Board/shadow HTTP/1.1\r\n"             // CHANGE ME
+#define GETHEADER "GET /things/Tao_CC3200Board/shadow HTTP/1.1\r\n"
+#define HOSTHEADER "Host: a2m3q4kfchczuu-ats.iot.us-west-1.amazonaws.com\r\n"  // CHANGE ME
 #define CHEADER "Connection: Keep-Alive\r\n"
 #define CTHEADER "Content-Type: application/json; charset=utf-8\r\n"
 #define CLHEADER1 "Content-Length: "
@@ -109,7 +110,10 @@
                 "\"desired\" : {\r\n"                                       \
                     "\"var\" :\""                                           \
                         "Hello phone, "                                     \
-                        "message from CC3200 via AWS IoT!"                  \
+                        "message from Tao CC3200 via AWS IoT!"            \
+                        "\",\r\n"                                            \
+                    "\"message\" :\""                                       \
+                        "Hello Tao from CC3200"                             \
                         "\"\r\n"                                            \
                 "}"                                                         \
             "}"                                                             \
@@ -241,6 +245,8 @@ void main() {
     if(lRetVal < 0) {
         ERR_PRINT(lRetVal);
     }
+
+
     http_post(lRetVal);
 
     sl_Stop(SL_STOP_TIMEOUT);

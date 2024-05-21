@@ -41,4 +41,10 @@
 			<locationURI>CC3200_SDK_ROOT/example/common/startup_ccs.c</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>CC3200_SDK_ROOT</name>
+			<value>file:/Applications/ti/lib/cc3200sdk_1.5.0/cc3200-sdk</value>
+		</variable>
+	</variableList>
 </projectDescription>
