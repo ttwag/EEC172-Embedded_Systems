@@ -32,8 +32,6 @@
 //  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 //
 //*****************************************************************************
-
-
 //*****************************************************************************
 //
 // Application Name     -   SSL Demo
@@ -48,40 +46,32 @@
 // http://processors.wiki.ti.com/index.php/CC32xx_SSL_Demo_Application
 //
 //*****************************************************************************
-
-
 //*****************************************************************************
 //
 //! \addtogroup ssl
 //! @{
 //
 //*****************************************************************************
-
 #include <stdio.h>
-
 // Simplelink includes
 #include "simplelink.h"
-
 //Driverlib includes
 #include "hw_types.h"
 #include "hw_ints.h"
+#include "hw_memmap.h"
 #include "rom.h"
 #include "rom_map.h"
 #include "interrupt.h"
 #include "prcm.h"
 #include "utils.h"
 #include "uart.h"
-
 //Common interface includes
 #include "pinmux.h"
 #include "gpio_if.h"
 #include "common.h"
 #include "uart_if.h"
-
 // Custom includes
 #include "utils/network_utils.h"
-
-
 //NEED TO UPDATE THIS FOR IT TO WORK!
 #define DATE                20    /* Current Date */
 #define MONTH               5     /* Month 1-12 */
@@ -104,8 +94,12 @@
 #define CTHEADER "Content-Type: application/json; charset=utf-8\r\n"
 #define CLHEADER1 "Content-Length: "
 #define CLHEADER2 "\r\n\r\n"
-
-#define DATA1 "{" \
+// UART
+#define CONSOLE              UARTA0_BASE
+#define UartGetChar()        MAP_UARTCharGet(CONSOLE)
+#define UartPutChar(c)       MAP_UARTCharPut(CONSOLE,c)
+#define MAX_STRING_LENGTH    80
+#define DATA1_1 "{" \
             "\"state\": {\r\n"                                              \
                 "\"desired\" : {\r\n"                                       \
                     "\"var\" :\""                                           \
@@ -118,31 +112,26 @@
                 "}"                                                         \
             "}"                                                             \
         "}\r\n\r\n"
-
-
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-
 #if defined(ccs) || defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-
+volatile int g_iCounter = 0;
+char DATA1[200];
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End: df
 //*****************************************************************************
-
-
 //****************************************************************************
 //                      LOCAL FUNCTION PROTOTYPES
 //****************************************************************************
 static int set_time();
 static void BoardInit(void);
 static int http_post(int);
-
 //*****************************************************************************
 //
 //! Board Initialization & Configuration
@@ -170,13 +159,8 @@ static void BoardInit(void) {
     //
     MAP_IntMasterEnable();
     MAP_IntEnable(FAULT_SYSTICK);
-
     PRCMCC3200MCUInit();
 }
-
-
-
-
 //*****************************************************************************
 //
 //! This function updates the date and time of CC3200.
@@ -187,25 +171,20 @@ static void BoardInit(void) {
 //!     0 for success, negative otherwise
 //!
 //*****************************************************************************
-
 static int set_time() {
     long retVal;
-
     g_time.tm_day = DATE;
     g_time.tm_mon = MONTH;
     g_time.tm_year = YEAR;
     g_time.tm_sec = HOUR;
     g_time.tm_hour = MINUTE;
     g_time.tm_min = SECOND;
-
     retVal = sl_DevSet(SL_DEVICE_GENERAL_CONFIGURATION,
                           SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME,
                           sizeof(SlDateTime),(unsigned char *)(&g_time));
-
     ASSERT_ON_ERROR(retVal);
     return SUCCESS;
 }
-
 //*****************************************************************************
 //
 //! Main 
@@ -217,21 +196,20 @@ static int set_time() {
 //*****************************************************************************
 void main() {
     long lRetVal = -1;
+    char cString[MAX_STRING_LENGTH+1];
+    char cCharacter;
+    int iStringLength = 0;
     //
     // Initialize board configuration
     //
     BoardInit();
-
     PinMuxConfig();
-
     InitTerm();
     ClearTerm();
     UART_PRINT("My terminal works!\n\r");
-
     // initialize global default app configuration
     g_app_config.host = SERVER_NAME;
     g_app_config.port = GOOGLE_DST_PORT;
-
     //Connect the CC3200 to the local access point
     lRetVal = connectToAccessPoint();
     //Set time so that encryption can be used
@@ -245,10 +223,50 @@ void main() {
     if(lRetVal < 0) {
         ERR_PRINT(lRetVal);
     }
-
-
-    http_post(lRetVal);
-
+    while(1) {
+        //
+        // Fetching the input from the terminal.
+        //
+        cCharacter = UartGetChar();
+        g_iCounter++;
+        if(cCharacter == '\r' || cCharacter == '\n' ||
+           (iStringLength >= MAX_STRING_LENGTH -1))
+        {
+            if(iStringLength >= MAX_STRING_LENGTH - 1)
+            {
+                UartPutChar(cCharacter);
+                cString[iStringLength] = cCharacter;
+                iStringLength++;
+            }
+            cString[iStringLength] = '\0';
+            iStringLength = 0;
+            //
+            // Conbine the user input to JSON
+            //
+            snprintf(DATA1, sizeof(DATA1),
+                             "{" \
+                                 "\"state\": {\r\n"                                              \
+                                     "\"desired\" : {\r\n"                                       \
+                                         "\"var\" :\""                                           \
+                                             "Hello phone, "                                     \
+                                             "message from Tao CC3200 via AWS IoT!"            \
+                                             "\",\r\n"                                            \
+                                         "\"message\" :\""                                     \
+                                                     "%s"                                       \
+                                             "\"\r\n"                                            \
+                                     "}"                                                         \
+                                 "}"                                                             \
+                             "}\r\n\r\n", cString
+            );
+            http_post(lRetVal);
+        }
+        else
+        {
+            UartPutChar(cCharacter);
+            cString[iStringLength] = cCharacter;
+            iStringLength++;
+        }
+    }
     sl_Stop(SL_STOP_TIMEOUT);
     LOOP_FOREVER();
 }
@@ -258,14 +276,12 @@ void main() {
 //! @}
 //
 //*****************************************************************************
-
 static int http_post(int iTLSSockID){
     char acSendBuff[512];
     char acRecvbuff[1460];
     char cCLLength[200];
     char* pcBufHeaders;
     int lRetVal = 0;
-
     pcBufHeaders = acSendBuff;
     strcpy(pcBufHeaders, POSTHEADER);
     pcBufHeaders += strlen(POSTHEADER);
@@ -274,29 +290,20 @@ static int http_post(int iTLSSockID){
     strcpy(pcBufHeaders, CHEADER);
     pcBufHeaders += strlen(CHEADER);
     strcpy(pcBufHeaders, "\r\n\r\n");
-
     int dataLength = strlen(DATA1);
-
     strcpy(pcBufHeaders, CTHEADER);
     pcBufHeaders += strlen(CTHEADER);
     strcpy(pcBufHeaders, CLHEADER1);
-
     pcBufHeaders += strlen(CLHEADER1);
     sprintf(cCLLength, "%d", dataLength);
-
     strcpy(pcBufHeaders, cCLLength);
     pcBufHeaders += strlen(cCLLength);
     strcpy(pcBufHeaders, CLHEADER2);
     pcBufHeaders += strlen(CLHEADER2);
-
     strcpy(pcBufHeaders, DATA1);
     pcBufHeaders += strlen(DATA1);
-
     int testDataLength = strlen(pcBufHeaders);
-
     UART_PRINT(acSendBuff);
-
-
     //
     // Send the packet to the server */
     //
@@ -319,6 +326,7 @@ static int http_post(int iTLSSockID){
         UART_PRINT(acRecvbuff);
         UART_PRINT("\n\r\n\r");
     }
-
     return 0;
 }
+
+
