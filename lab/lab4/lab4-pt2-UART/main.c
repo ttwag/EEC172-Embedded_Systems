@@ -76,7 +76,7 @@
 #define DATE                20    /* Current Date */
 #define MONTH               5     /* Month 1-12 */
 #define YEAR                2024  /* Current year */
-#define HOUR                8    /* Time - hours */
+#define HOUR                12    /* Time - hours */
 #define MINUTE              0    /* Time - minutes */
 #define SECOND              0     /* Time - seconds */
 
