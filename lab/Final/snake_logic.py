@@ -33,9 +33,10 @@ rect_x = 100
 rect_y = 100
 # Direction: 0, 1, 2, 3 - Right, Left, Up, Down
 direction = 0 
-snake_size = 25
+snake_size = 10
 
-snake = [[0, 0, 0], [snake_size, 0, 0], [2 * snake_size, 0, 0]]
+snake = []
+snake = [[rect_x, rect_y, 1], [rect_x + snake_size, rect_y, 1], [rect_x + 2*snake_size-1, rect_y, 1]]
 
 # Game loop that keeps the window open
 running = True
@@ -46,17 +47,19 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    if (rect_x >= screen_width - wall_thickness - snake_size): 
+    if (snake[0][0] >= screen_width - wall_thickness - snake_size): 
         break
-    if (rect_x <= wall_thickness):
+    if (snake[0][0] <= wall_thickness):
         break
-    if (rect_y >= screen_height - wall_thickness - snake_size):
+    if (snake[0][1] >= screen_height - wall_thickness - snake_size):
         break
-    if (rect_y <= wall_thickness):
+    if (snake[0][1] <= wall_thickness):
         break
 
+    
     # Delete the old rectangle by drawing over it with a black rectangle
-    pygame.draw.rect(screen, BLACK, (rect_x, rect_y, snake_size, snake_size))
+    for segment in snake:
+        pygame.draw.rect(screen, BLACK, (segment[0], segment[1], snake_size, snake_size))
 
     # Move the rectangle depending on the pressed key and previous direction
     keys = pygame.key.get_pressed()
@@ -68,20 +71,29 @@ while running:
         direction = 2
     elif keys[pygame.K_DOWN]:
         direction = 3
-    elif direction == 0:
-        rect_x += 5
-    elif direction == 1:
-        rect_x -= 5
-    elif direction == 2:
-        rect_y -= 5
-    elif direction == 3:
-        rect_y += 5
-    else:
-        rect_x += 5
+    
+    snake[0][2] = direction
+    last_direction = direction
 
-   
-    # Draw the new rectangle at its updated position
-    pygame.draw.rect(screen, WHITE, (rect_x, rect_y, snake_size, snake_size))
+    for segment in snake:
+        curr_direction = segment[2]
+        if curr_direction == 0:
+            segment[0] += snake_size
+        elif curr_direction == 1:
+            segment[0] -= snake_size
+        elif curr_direction == 2:
+            segment[1] -= snake_size
+        elif curr_direction == 3:
+            segment[1] += snake_size
+        else:
+            segment[0] += snake_size
+        temp = segment[2]
+        segment[2] = last_direction
+        last_direction = temp
+    
+        # Draw the new rectangle at its updated position
+        pygame.draw.rect(screen, WHITE, (segment[0], segment[1], snake_size, snake_size))
+
 
     # Update the display
     pygame.display.flip()
