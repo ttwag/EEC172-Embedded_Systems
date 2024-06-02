@@ -39,7 +39,7 @@ class DoublyLinkedList:
             node = node.next
 class Snake:
     def __init__(self, length, seg_size, init_pos):
-        self.seg_size = seg_size
+        self.snake_seg_size = seg_size
         self.body = DoublyLinkedList()
         for i in range(length-1, -1, -1):
             self.body.insert_front([init_pos + i * seg_size, init_pos])
@@ -49,13 +49,13 @@ class Snake:
         head_x = self.head.data[0]
         head_y = self.head.data[1]
         if direction == 0:
-            self.body.insert_front([head_x + self.seg_size, head_y])
+            self.body.insert_front([head_x + self.snake_seg_size, head_y])
         elif direction == 1:
-            self.body.insert_front([head_x - self.seg_size, head_y])
+            self.body.insert_front([head_x - self.snake_seg_size, head_y])
         elif direction == 2:
-            self.body.insert_front([head_x, head_y - self.seg_size])
+            self.body.insert_front([head_x, head_y - self.snake_seg_size])
         else:
-            self.body.insert_front([head_x, head_y + self.seg_size])
+            self.body.insert_front([head_x, head_y + self.snake_seg_size])
         self.body.delete_tail()
     def self_collision(self):
         pass
@@ -102,6 +102,12 @@ snake_length = 15
 snake = []
 for i in range(0, snake_length):
     snake.append([rect_x + snake_seg_size * i, rect_y, 1])
+
+# Initialize a snake object
+# Delete the snake tail
+# Move the snake
+# Draw the new snake head
+
 
 # Game loop that keeps the window open
 running = True
