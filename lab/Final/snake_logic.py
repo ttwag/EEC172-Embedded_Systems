@@ -1,8 +1,9 @@
 import pygame
+import random
 
 class ListNode:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, coordinate):
+        self.coordinate = coordinate
         self.prev = None
         self.next = None
 
@@ -11,8 +12,8 @@ class DoublyLinkedList:
         self.head = None
         self.tail = None
         self.length = 0
-    def insert_front(self, data):
-        new_Node = ListNode(data)
+    def insert_front(self, coordinate):
+        new_Node = ListNode(coordinate)
         new_Node.prev = None
         if self.length:
             new_Node.next = self.head
@@ -35,7 +36,7 @@ class DoublyLinkedList:
     def print_list(self):
         node = self.head
         while node:
-            print(node.data)
+            print(node.coordinate)
             node = node.next
 class Snake:
     def __init__(self, length, seg_size, init_pos):
@@ -46,8 +47,8 @@ class Snake:
         self.snake_head = self.body.head
         self.snake_tail = self.body.tail
     def move(self, direction):
-        head_x = self.snake_head.data[0]
-        head_y = self.snake_head.data[1]
+        head_x = self.snake_head.coordinate[0]
+        head_y = self.snake_head.coordinate[1]
         if direction == 0:
             self.body.insert_front([head_x + self.snake_seg_size, head_y])
         elif direction == 1:
@@ -75,6 +76,7 @@ clock = pygame.time.Clock()
 Color = (255, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+PURPLE = (128, 0, 255)
 
 # Define wall dimensions
 wall_thickness = 20
@@ -105,9 +107,13 @@ snake_length = 10
 snake = Snake(snake_length, snake_seg_size, rect_x)
 segment = snake.snake_head
 snake.body.print_list()
+
 while segment:
-    pygame.draw.rect(screen, WHITE, (segment.data[0], segment.data[1], snake_seg_size, snake_seg_size))
+    pygame.draw.rect(screen, WHITE, (segment.coordinate[0], segment.coordinate[1], snake_seg_size, snake_seg_size))
     segment = segment.next
+
+# Fruit
+fruit = [-1, -1]
 
 # Game loop that keeps the window open
 running = True
@@ -119,21 +125,27 @@ while running:
 
     
     # End the game if snake's head hits the wall
-    if (snake.snake_head.data[0] >= screen_width - wall_thickness - snake_seg_size): 
+    if (snake.snake_head.coordinate[0] >= screen_width - wall_thickness - snake_seg_size - 1): 
         break
-    if (snake.snake_head.data[0] <= wall_thickness):
+    if (snake.snake_head.coordinate[0] <= wall_thickness):
         break
-    if (snake.snake_head.data[1] >= screen_height - wall_thickness - snake_seg_size):
+    if (snake.snake_head.coordinate[1] >= screen_height - wall_thickness - snake_seg_size - 1):
         break
-    if (snake.snake_head.data[1] <= wall_thickness):
+    if (snake.snake_head.coordinate[1] <= wall_thickness):
         break
     
-    
+    # Checks if the snake is on top of the fruit
+    if abs(snake.snake_head.coordinate[0] - fruit[0]) <= 2 or abs(snake.snake_head.coordinate[1] - fruit[1]) <= 2:
+        pygame.draw.rect(screen, BLACK, (fruit[0], fruit[1], snake_seg_size, snake_seg_size))    
+        fruit = [-1, -1]
+
     # Delete the old rectangle by drawing over it with a black rectangle
-    pygame.draw.rect(screen, BLACK, (snake.snake_tail.data[0], snake.snake_tail.data[1], snake_seg_size, snake_seg_size))
+    pygame.draw.rect(screen, BLACK, (snake.snake_tail.coordinate[0], snake.snake_tail.coordinate[1], snake_seg_size, snake_seg_size))
 
-
-    # Randomly generate new food if not have one already
+    # Randomly generate new fruit if not have one already
+    if fruit == [-1, -1]:
+        fruit = [random.randint(wall_thickness, screen_width - wall_thickness - snake_seg_size - 1), random.randint(wall_thickness, screen_width - wall_thickness - snake_seg_size - 1)]
+        pygame.draw.rect(screen, PURPLE, (fruit[0], fruit[1], snake_seg_size, snake_seg_size))
 
     # Move the rectangle depending on the pressed key and previous direction
     keys = pygame.key.get_pressed()
@@ -155,7 +167,7 @@ while running:
     snake.move(direction)
     
     # Draw the new rectangle at its updated position
-    pygame.draw.rect(screen, WHITE, (snake.snake_head.data[0], snake.snake_head.data[1], snake_seg_size, snake_seg_size))
+    pygame.draw.rect(screen, WHITE, (snake.snake_head.coordinate[0], snake.snake_head.coordinate[1], snake_seg_size, snake_seg_size))
 
     # Update the display
     pygame.display.flip()
