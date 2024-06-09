@@ -135,7 +135,7 @@ while running:
         break
     
     # Checks if the snake is on top of the fruit
-    if abs(snake.snake_head.coordinate[0] - fruit[0]) <= 2 or abs(snake.snake_head.coordinate[1] - fruit[1]) <= 2:
+    if abs(snake.snake_head.coordinate[0] - fruit[0]) <= snake_seg_size and abs(snake.snake_head.coordinate[1] - fruit[1]) <= snake_seg_size:
         pygame.draw.rect(screen, BLACK, (fruit[0], fruit[1], snake_seg_size, snake_seg_size))    
         fruit = [-1, -1]
 

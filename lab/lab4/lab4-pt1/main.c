@@ -83,8 +83,8 @@
 
 
 //NEED TO UPDATE THIS FOR IT TO WORK!
-#define DATE                21    /* Current Date */
-#define MONTH               5     /* Month 1-12 */
+#define DATE                5    /* Current Date */
+#define MONTH               6     /* Month 1-12 */
 #define YEAR                2024  /* Current year */
 #define HOUR                9    /* Time - hours */
 #define MINUTE              0    /* Time - minutes */
@@ -215,6 +215,7 @@ static int set_time() {
 //! \return None
 //!
 //*****************************************************************************
+
 void main() {
     long lRetVal = -1;
     //
@@ -245,8 +246,8 @@ void main() {
     if(lRetVal < 0) {
         ERR_PRINT(lRetVal);
     }
-    http_post(lRetVal);
-
+//    http_post(lRetVal);
+    http_get(lRetVal);
     sl_Stop(SL_STOP_TIMEOUT);
     LOOP_FOREVER();
 }
@@ -305,17 +306,86 @@ static int http_post(int iTLSSockID){
         GPIO_IF_LedOn(MCU_RED_LED_GPIO);
         return lRetVal;
     }
+
     lRetVal = sl_Recv(iTLSSockID, &acRecvbuff[0], sizeof(acRecvbuff), 0);
     if(lRetVal < 0) {
         UART_PRINT("Received failed. Error Number: %i\n\r",lRetVal);
         //sl_Close(iSSLSockID);
         GPIO_IF_LedOn(MCU_RED_LED_GPIO);
-           return lRetVal;
+        return lRetVal;
     }
     else {
         acRecvbuff[lRetVal+1] = '\0';
         UART_PRINT(acRecvbuff);
         UART_PRINT("\n\r\n\r");
+    }
+
+    return 0;
+}
+
+static int http_get(int iTLSSockID){
+    char acSendBuff[512];
+    char acRecvbuff[1460];
+    char cCLLength[200];
+    char* pcBufHeaders;
+    int lRetVal = 0;
+
+    pcBufHeaders = acSendBuff;
+    strcpy(pcBufHeaders, GETHEADER);
+    pcBufHeaders += strlen(GETHEADER);
+    strcpy(pcBufHeaders, HOSTHEADER);
+    pcBufHeaders += strlen(HOSTHEADER);
+    strcpy(pcBufHeaders, CHEADER);
+    pcBufHeaders += strlen(CHEADER);
+    strcpy(pcBufHeaders, "\r\n\r\n");
+
+    int dataLength = strlen(DATA1);
+
+    strcpy(pcBufHeaders, CTHEADER);
+    pcBufHeaders += strlen(CTHEADER);
+    strcpy(pcBufHeaders, CLHEADER1);
+
+    pcBufHeaders += strlen(CLHEADER1);
+    sprintf(cCLLength, "%d", dataLength);
+
+    strcpy(pcBufHeaders, cCLLength);
+    pcBufHeaders += strlen(cCLLength);
+    strcpy(pcBufHeaders, CLHEADER2);
+    pcBufHeaders += strlen(CLHEADER2);
+    strcpy(pcBufHeaders, DATA1);
+    pcBufHeaders += strlen(DATA1);
+    int testDataLength = strlen(pcBufHeaders);
+
+    UART_PRINT(acSendBuff);
+
+
+    //
+    // Send the packet to the server */
+    //
+    lRetVal = sl_Send(iTLSSockID, acSendBuff, strlen(acSendBuff), 0);
+    if(lRetVal < 0) {
+        UART_PRINT("POST failed. Error Number: %i\n\r",lRetVal);
+        sl_Close(iTLSSockID);
+        GPIO_IF_LedOn(MCU_RED_LED_GPIO);
+        return lRetVal;
+    }
+
+    lRetVal = sl_Recv(iTLSSockID, &acRecvbuff[0], sizeof(acRecvbuff), 0);
+    if(lRetVal < 0) {
+        UART_PRINT("Received failed. Error Number: %i\n\r",lRetVal);
+        //sl_Close(iSSLSockID);
+        GPIO_IF_LedOn(MCU_RED_LED_GPIO);
+        return lRetVal;
+    }
+    else {
+        acRecvbuff[lRetVal+1] = '\0';
+        UART_PRINT(acRecvbuff);
+        UART_PRINT("\n\r\n\r");
+//        const char message = acRecvbuff[32];
+//        UART_PRINT(message);
+
+        Report("state received: %d\n", acRecvbuff[299]-'0');
+        return acRecvbuff[299]-'0';
     }
 
     return 0;
