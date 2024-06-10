@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>index</title>
+  <!-- <link rel="stylesheet" type="text/css" href="assets/github-markdown-light.css" /> -->
+  <link rel="stylesheet" href="assets/github-markdown-light.css" />
+  <link rel="stylesheet" href="assets/style-customization.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<article class="markdown-body">
+<h1 id="dual-player-snake-game-on-cc3200">Dual-player Snake Game on
+CC3200</h1>
+<p>We developed a dual-player snake game where each player takes turns
+to complete a snake game. When a player scores at least five points in
+their turn, the other player loses. On the other hand, if that player
+hits the wall and dies before winning five points, the other player
+wins.</p>
+<h2 id="table-of-contents">Table Of Contents</h2>
+<ul>
+<li><a href="#1-contributors">1. Contributors</a></li>
+<li><a href="#2-list-of-materials">2. List of Materials</a>
+<ul>
+<li><a href="#list-of-hardware">List of Hardware</a></li>
+<li><a href="#list-of-software">List of Software</a></li>
+</ul></li>
+<li><a href="#3-system-structure">3. System Structure</a>
+<ul>
+<li><a href="#system-architecture">System Architecture</a></li>
+<li><a href="#functional-specification">Functional
+Specification</a></li>
+</ul></li>
+<li><a href="#4-implementation">4. Implementation</a>
+<ul>
+<li><a href="#pin-settings">Pin Settings</a></li>
+<li><a href="#project-structure">Project Structure</a></li>
+<li><a href="#challenges">Challenges</a></li>
+</ul></li>
+<li><a href="#5-references">5. References</a></li>
+</ul>
+<h2 id="1-contributors">1. Contributors</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Name</th>
+<th style="text-align: right;">Responsibility</th>
+<th style="text-align: right;">Email</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">Zhenyi Lu</td>
+<td style="text-align: right;">Snake Game UI and structure, hardware
+I/O</td>
+<td style="text-align: right;"><a
+href="mailto:ryalu@ucdavis.edu">ryalu@ucdavis.edu</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">Tao Wang</td>
+<td style="text-align: right;">Snake Game Logic</td>
+<td style="text-align: right;"><a
+href="mailto:taowang@ucdavis.edu">taowang@ucdavis.edu</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-list-of-materials">2. List of Materials</h2>
+<h3 id="list-of-hardware">List of Hardware</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Name</th>
+<th style="text-align: right;">Description</th>
+<th style="text-align: right;">Qty</th>
+<th style="text-align: right;">Supplier</th>
+<th style="text-align: right;">Unit Cost ($)</th>
+<th style="text-align: right;">Total Cost ($)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.ti.com/tool/CC3200-LAUNCHXL#order-start-development">CC3200
+LAUNCHXL</a></strong></td>
+<td style="text-align: right;">Microcontroller for computing</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://www.adafruit.com/product/1431">Adafuit OLED 16-Bit
+OLED</a></strong></td>
+<td style="text-align: right;">OLED Screen that displays the Game</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">39.95</td>
+<td style="text-align: right;">79.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.amazon.com/Replacement-Remote-Control-RC1534801-U-Verse/dp/B0B7C7Z5HR">ATT-RC1534801
+Remote Controller</a></strong></td>
+<td style="text-align: right;">Controls the snake's speed
+wirelessly</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">24.99</td>
+<td style="text-align: right;">49.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://www.digikey.com/en/products/detail/vishay-semiconductor-opto-division/TSOP31130/4494429?utm_adgroup=General&amp;utm_source=google&amp;utm_medium=cpc&amp;utm_campaign=PMax%20Shopping_Product_Zombie%20SKUs&amp;utm_term=&amp;utm_content=General&amp;utm_id=go_cmp-17815035045_adg-_ad-__dev-c_ext-_prd-4494429_sig-Cj0KCQjwpZWzBhC0ARIsACvjWROlAaTvYjQc5Kn6qTrYiuLLhUJEUtMv46Q_KxAsayviBmGatc6r_LYaAtjrEALw_wcB&amp;gad_source=1&amp;gclid=Cj0KCQjwpZWzBhC0ARIsACvjWROlAaTvYjQc5Kn6qTrYiuLLhUJEUtMv46Q_KxAsayviBmGatc6r_LYaAtjrEALw_wcB">Vishay
+TSOP31130 IR Receiver</a></strong></td>
+<td style="text-align: right;">Receives the Remote Controller's
+signal</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">2.82</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.amazon.com/EDGELEC-Resistor-Tolerance-Multiple-Resistance/dp/B07QH5PFG3/ref=sr_1_3?crid=3L3V1S2IA8KDV&amp;dib=eyJ2IjoiMSJ9.-yUS-QRUOwfQEjnz7IZ1kpdS-zUR6DjP0SxTPj9NSKTkdpwH4BryzKtQAhMH2DBnFqqc9R7nYkzu4Wfi8fw24ra-_lUN0pYqqvF2MRVLlyI8Hq5C2OISrs2cXvKVpjfYusxEUnKGGOWtzejXeZwWMLzdh1XL6fi8Y5X8sE5fxyIsoitGAiBm9tFLa4uDcU0gjWj0fVg6se78X645ZAZTkfToQohQ5ipi66AZaL2YXH4.EoSHIr0RBP3iyWt1hpV7CP4zRWD5w36AaHM2K8lkNrM&amp;dib_tag=se&amp;keywords=330+ohm+resistor&amp;qid=1717960040&amp;sprefix=330+ohm+resistor%2Caps%2C254&amp;sr=8-3">330
+Ω Resistor</a></strong></td>
+<td style="text-align: right;">Stablize the supply voltage to the IR
+Receiver</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">0.0599</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://www.amazon.com/ALLECIN-Electrolytic-Capacitor-0-2x0-43in-Capacitors/dp/B0CMQB9QCH/ref=sr_1_1_sspa?crid=1IV3O1OA04MWP&amp;dib=eyJ2IjoiMSJ9.ZpuCTk91KT-sqK4_s3VmOtrpVtg6KzjgOWf1WotdpYWXdw0RVSAD3Dat1rlWDMuwHIcd5v33u1SPAabuTIP3wazkzsVFaJ7njqO9n6Krql-SAoPJ2y0VbgbiFKcG3DWYOzFViC4wuXaSltTDci_yRREADpbZG8o4Frv8twBF9wc-xjSjd6zwjQ2gMNG-nhxbGtN8x5z2UBB5JTG61TljFmzXY0C2iGOc7D7fGyHioHM.HRab18bSSY_55KPuSWfugg41vnrP8QYBvgbQFrX7S8g&amp;dib_tag=se&amp;keywords=10µF%2BCapacitor&amp;qid=1717960129&amp;sprefix=330%2Bohm%2Bresistor%2Caps%2C200&amp;sr=8-1-spons&amp;sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&amp;th=1">10µF
+Capacitor</a></strong></td>
+<td style="text-align: right;">Stablize the supply voltage to the IR
+Receiver</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">EEC172 Lab</td>
+<td style="text-align: right;">0.399</td>
+<td style="text-align: right;">0.798</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">Total</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">243.6</td>
+</tr>
+</tbody>
+</table>
+<h3 id="list-of-software">List of Software</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Name</th>
+<th style="text-align: right;">Version</th>
+<th style="text-align: right;">Description</th>
+<th style="text-align: right;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.ti.com/tool/CCSTUDIO">Code Composer Studio
+(CCS)</a></strong></td>
+<td style="text-align: right;">12.6.0.00008</td>
+<td style="text-align: right;">The IDE to progeam CC3200
+Microcontroller</td>
+<td style="text-align: right;">Free</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://www.ti.com/tool/cc3200sdk">CC3200 Software Development
+kit</a></strong></td>
+<td style="text-align: right;">1.5.0</td>
+<td style="text-align: right;">Contains the library functions and
+example programs on using them</td>
+<td style="text-align: right;">Free</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.ti.com/tool/SYSCONFIG">TI SYSCONFIG
+Tool</a></strong></td>
+<td style="text-align: right;">1.19.0</td>
+<td style="text-align: right;">Configures the pins on CC3200</td>
+<td style="text-align: right;">Free</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://www.ti.com/tool/download/UNIFLASH/3.4.1">CCS
+Uniflash</a></strong></td>
+<td style="text-align: right;">3.4.1</td>
+<td style="text-align: right;">Flash the C program onto the non-volatile
+storage on CC3200</td>
+<td style="text-align: right;">Free</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong><a
+href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PuTTY
+Terminal</a></strong></td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">Terminal emulator that allows user to
+have a terminal interface in CCS</td>
+<td style="text-align: right;">Free</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong><a
+href="https://aws.amazon.com/free/iot/?trk=d96365ed-3ce7-4dd5-9cab-102978dac4ce&amp;sc_channel=ps&amp;ef_id=Cj0KCQjwpZWzBhC0ARIsACvjWRNcSTcWp89k8iiKgbQtjjw9QsrAICBw75YWqyswXtoHmpaLF0uZogIaAiwEEALw_wcB:G:s&amp;s_kwcid=AL!4422!3!675292217919!p!!g!!iot%20solution!19852661753!145019262697&amp;gclid=Cj0KCQjwpZWzBhC0ARIsACvjWRNcSTcWp89k8iiKgbQtjjw9QsrAICBw75YWqyswXtoHmpaLF0uZogIaAiwEEALw_wcB">AWS
+IoT Core</a></strong></td>
+<td style="text-align: right;">June 2024</td>
+<td style="text-align: right;">Cloud provider that connects IoT devices
+together</td>
+<td style="text-align: right;">Free</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-system-structure">3. System Structure</h2>
+<p>We want each CC3200 to run the snake game and display the game on the
+Adafruit OLED. The board also processes inputs from the on-board
+accelerometer, on-board switches, and IR Receiver.</p>
+<h3 id="system-architecture">System Architecture</h3>
+<p><img src="./media/System_Architecture.png" alt="sys_arch" /></p>
+<p>Each CC3200 takes input from the sensors with the protocols labeled
+on the arrow. The only exception is the IR receiver, which triggers an
+interrupt in CC3200 to process the IR pulses.</p>
+<h3 id="functional-specification">Functional Specification</h3>
+<p><img src="./media/Functional_Specification.png"
+alt="Functional_specification" /></p>
+<p>The code starts with the Initial board, communication protocol, and
+timer, this block of code only executes once. after initialization, the
+code gets into the start state and waits for the player to press any key
+to start the initial variable of the game. Once sw1 or sw2 is equal to
+1, all the variables are reset, and the status is rewritten to 0, and
+then the game starts. In the game, it reads the input of the remote
+control and then reads the accelerometer and button input once every 100
+times after completing the remote control input reading. This is to
+avoid the accelerometer communication time accounting for too long and
+causing the remote control start bit to be missed. When the buttons and
+accelerometer input have been read, the code processes the input and
+control calculation state to determine the end of the game for win or
+loss or waiting for the next reading. If the game ends and the print
+result is, it will be waiting for the other player to synchronize the
+status from AWS before starting the next round.</p>
+<h2 id="4-implementation">4. Implementation</h2>
+<h3 id="pin-settings">Pin Settings</h3>
+<p><img src="./media/pin.png" alt="pin" /></p>
+<h3 id="project-structure">Project Structure</h3>
+<p>The snake game is stored in <a
+href="https://github.com/ttwag/EEC172-Embedded_Systems/tree/main/lab/Final/final_ccs">https://github.com/ttwag/EEC172-Embedded_Systems/tree/main/lab/Final/final_ccs</a></p>
+<ul>
+<li>final_ccs
+<ul>
+<li><strong>final-snake_game</strong>: contains the entire snake game
+program.
+<ul>
+<li><em>main.c</em>: Contains the entire snake game's logic and runs on
+the CC3200.</li>
+<li><em>pin_mux_config.c/pin_mux_config.h</em>: Configures the pins on
+CC3200 to the pin settings table.</li>
+<li><em>oled</em>: The oled directory stores the functions that makes
+SPI communication between CC3200 and Adafruit oled possible.</li>
+<li><em>lib_if</em>: Contains other necessary library functions.</li>
+<li><em>utils</em>: Contains the library functions that make WiFi
+connection possible.</li>
+</ul></li>
+<li>final-snake_logic: a separate program that stores the logic behind
+the moving snake in the snake game. The game <strong>does not depend on
+this directory</strong>. It's a separate building block of the snake
+game during the development.</li>
+</ul></li>
+</ul>
+<h3 id="challenges">Challenges</h3>
+<p>There are mainly three challenges: the time conflict when reading the
+input signal, unstable connection to AWS, and the link list management
+of the snake. The signal read for IR needs to take more time to make
+sure the starting bit won’t be missing if updating the snake and mark
+every time IR read, because the drawing function for OLED takes lots of
+time, remote controller signal will be ignored. The information of the
+snake is managed by a linked list, but the data structure of this part
+is complex and uses large amounts of pointers, which creates some
+challenges in the embedded system environment.</p>
+<h2 id="5-references">5. References</h2>
+<ul>
+<li>This is the final Project for EEC172 Embedded Systems in Spring
+2024. More information about this course can be found at: <a
+href="https://ece.ucdavis.edu/course-catalog">https://ece.ucdavis.edu/course-catalog</a></li>
+<li>The source code of the game is at: <a
+href="https://github.com/ttwag/EEC172-Embedded_Systems/tree/main/lab/Final/final_ccs/final-snake_game">https://github.com/ttwag/EEC172-Embedded_Systems/tree/main/lab/Final/final_ccs/final-snake_game</a></li>
+</ul>
+</article>
+</html>
