@@ -57,7 +57,7 @@ Each CC3200 takes input from the sensors with the protocols labeled on the arrow
 
 ### Functional Specification
 
-![Functional_specification](./media/Functional_Specification.png)
+![Functional_specification](../media/Functional_Specification.png)
 
 The code starts with the Initial board, communication protocol, and timer, this block of code only executes once. after
 initialization, the code gets into the start state and waits for the
@@ -80,7 +80,7 @@ AWS before starting the next round.
 
 ### Pin Settings
 
-![pin](./media/pin.png)
+![pin](../media/pin.png)
 
 
 ### Project Structure
